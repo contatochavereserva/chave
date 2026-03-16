@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Acionando Varredura de Fontes
         run: |
-          curl -L "https://script.google.com/macros/s/AKfycbxe1Y8aOKQx2yCECxt85QDFKXZo9p9OJBBlk2sKHsP6a5r3AH0Mliyevz16WtWcbCpq/exec?action=executarVarreduraMassa"
+          curl -L "https://script.google.com/macros/s/AKfycby1us82agmsf40yWXO_zf3_Jlj5w17oTuuacf4_LkSKqBHzGOl0g2XEoA27KnFfWwB9/exec?action=executarVarreduraMassa"
