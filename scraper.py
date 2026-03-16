@@ -2,16 +2,15 @@ import feedparser
 import requests
 import os
 import sys
+import hashlib
 
-# Força o Python a mostrar as mensagens na hora
 print("--- INICIANDO SCRAPER iAUTO ---", flush=True)
 
 TOKEN = os.environ.get('TELEGRAM_TOKEN')
 CHAT_ID = os.environ.get('CHAT_ID')
 
-# Verificação básica de chaves
 if not TOKEN or not CHAT_ID:
-    print(f"🚨 ERRO: Chaves faltando! TOKEN: {'OK' if TOKEN else 'FALTA'}, CHAT_ID: {'OK' if CHAT_ID else 'FALTA'}")
+    print("🚨 ERRO: Chaves faltando!")
     sys.exit(1)
 
 FEEDS = [
@@ -23,16 +22,22 @@ def enviar_telegram(titulo, link, veiculo):
     print(f"-> Tentando enviar: {titulo[:30]}...", flush=True)
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     
+    # Criamos um "ID curto" a partir do link para não estourar o limite de 64 bytes do Telegram
+    link_hash = hashlib.md5(link.encode()).hexdigest()[:10]
+    
     keyboard = {
         "inline_keyboard": [[
-            {"text": "✅ Aprovar", "callback_data": f"aprovar|{link}"},
-            {"text": "❌ Descartar", "callback_data": f"descartar|{link}"}
+            {"text": "✅ Aprovar", "callback_data": f"ap|{link_hash}"},
+            {"text": "❌ Descartar", "callback_data": f"dc|{link_hash}"}
         ]]
     }
     
+    # Colocamos o link completo visível na mensagem, para você clicar, mas não no botão
+    texto = f"🆕 *{veiculo}*\n\n{titulo}\n\n🔗 [Link Original]({link})"
+    
     payload = {
         "chat_id": CHAT_ID,
-        "text": f"🆕 *{veiculo}*\n\n{titulo}\n\n[Ler matéria]({link})",
+        "text": texto,
         "parse_mode": "Markdown",
         "reply_markup": keyboard
     }
@@ -46,7 +51,6 @@ def enviar_telegram(titulo, link, veiculo):
         print(f"   ❌ Erro de conexão: {e}", flush=True)
         sys.exit(1)
 
-# Execução
 for feed in FEEDS:
     print(f"Lendo feed: {feed['nome']}...", flush=True)
     d = feedparser.parse(feed['url'])
@@ -54,7 +58,6 @@ for feed in FEEDS:
         print(f"   ⚠️ Nenhuma notícia encontrada em {feed['nome']}")
         continue
         
-    # Pega a primeira notícia
     entry = d.entries[0]
     enviar_telegram(entry.title, entry.link, feed['nome'])
 
