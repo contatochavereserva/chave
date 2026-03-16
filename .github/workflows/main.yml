@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Acionando Varredura
         run: |
-          curl -L "https://script.google.com/macros/s/AKfycbyUmHUolu-Ha91ajepboHzGyjnAYnpDfrQvXH-N15uRWJZCGBAY8iVDkbqH8WR9saNl/exec"
+          curl -L "https://script.google.com/macros/s/AKfycbyBjhcbHeIEcq7pLnKOUZABc3xJmJLhU0_5yRN6JKskBq04tYDeuWbl4X6GVL2prGSX/exec"
